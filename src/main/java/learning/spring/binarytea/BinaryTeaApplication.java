@@ -1,10 +1,12 @@
 package learning.spring.binarytea;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.logging.LoggingMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import learning.spring.binarytea.actuator.SalesMetrics;
+import learning.spring.binarytea.model.MenuItemEntity;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.hibernate5.SessionFactoryUtils;
@@ -57,6 +63,19 @@ public class BinaryTeaApplication {
 		meterRegistry.add(new LoggingMeterRegistry());
 		return meterRegistry;
 	}
+
+	@Bean
+	public RedisTemplate<String, MenuItemEntity> redisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper){
+		Jackson2JsonRedisSerializer<MenuItemEntity> serializer = new Jackson2JsonRedisSerializer<>(MenuItemEntity.class);
+		serializer.setObjectMapper(objectMapper);
+
+		RedisTemplate redisTemplate = new RedisTemplate();
+		redisTemplate.setConnectionFactory(connectionFactory);
+		redisTemplate.setKeySerializer(RedisSerializer.string());
+		redisTemplate.setValueSerializer(serializer);
+		return redisTemplate;
+	}
+
 
 	@Scheduled(fixedDelay = 5000, initialDelay = 1000)
 	public void periodicallyMakeAnOrder() {
