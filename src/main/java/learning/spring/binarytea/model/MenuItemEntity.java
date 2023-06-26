@@ -22,7 +22,7 @@ import java.util.Date;
 public class MenuItemEntity implements Serializable {
     private static final long serialVersionUID = 8585684450527309518L;
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @Enumerated(EnumType.STRING)

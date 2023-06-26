@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "t_order")
 public class Order {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maker_id")

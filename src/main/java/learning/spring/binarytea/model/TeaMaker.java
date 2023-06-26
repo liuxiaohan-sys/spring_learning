@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "t_tea_maker")
 public class TeaMaker {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @OneToMany(mappedBy = "maker")
